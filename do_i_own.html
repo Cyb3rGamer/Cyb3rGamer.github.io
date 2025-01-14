@@ -22,8 +22,20 @@
             cursor: pointer;
         }
 
-        #results {
+        table {
+            width: 100%;
+            border-collapse: collapse;
             margin-top: 20px;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f4f4f4;
         }
 
         .owned {
@@ -37,18 +49,29 @@
 </head>
 <body>
     <h1>Do I Own?</h1>
-    <p>Enter a list of app ids (one per line) and click the button to check if I own them:</p>
+    <p>Enter a list of numbers (one per line) and click the button to check if you own them:</p>
     <textarea id="inputNumbers" placeholder="Enter numbers here..."></textarea>
     <button id="checkButton">Check Ownership</button>
-    <div id="results"></div>
+    <div id="results">
+        <table id="resultsTable" style="display: none;">
+            <thead>
+                <tr>
+                    <th>Number</th>
+                    <th>Ownership Status</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
 
     <script>
         document.getElementById('checkButton').addEventListener('click', async () => {
             const inputText = document.getElementById('inputNumbers').value;
             const inputNumbers = inputText.split('\n').map(num => num.trim()).filter(num => num !== '');
 
-            const resultsDiv = document.getElementById('results');
-            resultsDiv.innerHTML = 'Checking ownership...';
+            const resultsTable = document.getElementById('resultsTable');
+            const resultsBody = resultsTable.querySelector('tbody');
+            resultsBody.innerHTML = '';
 
             try {
                 const response = await fetch('https://cyb3rgamer.github.io/Cyb3rGamer_appid_list.json');
@@ -58,22 +81,32 @@
 
                 const ownedNumbers = await response.json();
 
-                resultsDiv.innerHTML = '';
                 inputNumbers.forEach(num => {
-                    const resultSpan = document.createElement('span');
-                    resultSpan.textContent = num;
+                    const row = document.createElement('tr');
+                    const numberCell = document.createElement('td');
+                    const statusCell = document.createElement('td');
 
+                    numberCell.textContent = num;
                     if (ownedNumbers.includes(Number(num))) {
-                        resultSpan.className = 'owned';
+                        statusCell.textContent = "I own";
+                        statusCell.className = 'owned';
                     } else {
-                        resultSpan.className = 'not-owned';
+                        statusCell.textContent = "I don't own";
+                        statusCell.className = 'not-owned';
                     }
 
-                    resultsDiv.appendChild(resultSpan);
-                    resultsDiv.appendChild(document.createElement('br'));
+                    row.appendChild(numberCell);
+                    row.appendChild(statusCell);
+                    resultsBody.appendChild(row);
                 });
+
+                resultsTable.style.display = 'table';
             } catch (error) {
-                resultsDiv.innerHTML = `<p style="color: red;">Error: ${error.message}</p>`;
+                resultsTable.style.display = 'none';
+                const errorMessage = document.createElement('p');
+                errorMessage.style.color = 'red';
+                errorMessage.textContent = `Error: ${error.message}`;
+                document.getElementById('results').appendChild(errorMessage);
             }
         });
     </script>

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How to Get Your Appids, Reliably!</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            line-height: 1.6;
+        }
+
+        h1, h2 {
+            color: #333;
+        }
+
+        pre {
+            background-color: #f4f4f4;
+            border: 1px solid #ddd;
+            padding: 10px;
+            overflow-x: auto;
+        }
+
+        code {
+            font-family: Consolas, 'Courier New', monospace;
+            color: #c7254e;
+            background-color: #f9f2f4;
+            padding: 2px 4px;
+            border-radius: 4px;
+        }
+
+        a {
+            color: #007bff;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        ul {
+            padding-left: 20px;
+        }
+
+        li {
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>SteamOwnedGames</h1>
+    <p>The following is a simple instruction on how to reliably extract the ID of all games that you own on Steam. You can do so manually or automate the process via the console.</p>
+
+    <h2>Manual:</h2>
+    <ol>
+        <li>Go to <a href="https://store.steampowered.com/" target="_blank">https://store.steampowered.com/</a></li>
+        <li>Make sure you are logged in</li>
+        <li>Go to <a href="https://store.steampowered.com/dynamicstore/userdata/" target="_blank">https://store.steampowered.com/dynamicstore/userdata/</a></li>
+        <li>The list of your app IDs is under <code>rgOwnedApps</code></li>
+    </ol>
+    <p>There shouldn't be any sensitive information on the above page at all, so you may share the entire page unless, for any reason, you just want to share the list of IDs as mentioned.</p>
+
+    <h2>Automated:</h2>
+    <ol>
+        <li>Go to <a href="https://store.steampowered.com/" target="_blank">https://store.steampowered.com/</a></li>
+        <li>Make sure you are logged in</li>
+        <li>Open the console (for Google Chrome on Windows, press <code>Ctrl + Shift + J</code>)</li>
+        <li>Copy/paste the following simple script and press Enter:</li>
+    </ol>
+    <pre>
+<code>
+JSON.stringify((await (await fetch('https://store.steampowered.com/dynamicstore/userdata')).json()).rgOwnedApps || [])
+</code>
+    </pre>
+    <p>The list of your app IDs is now printed in the console, and you can copy them.</p>
+</body>
+</html>

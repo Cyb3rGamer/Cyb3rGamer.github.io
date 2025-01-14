@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>How to Get Your App IDs, Reliably!</title>
+    <title>SteamOwnedGames</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -20,6 +20,8 @@
             border: 1px solid #ddd;
             padding: 10px;
             overflow-x: auto;
+            display: inline-block;
+            margin-right: 10px;
         }
 
         code {
@@ -46,10 +48,24 @@
         li {
             margin-bottom: 10px;
         }
+
+        button {
+            padding: 5px 10px;
+            font-size: 14px;
+            cursor: pointer;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
     </style>
 </head>
 <body>
-    <h1>How to Get Your App IDs, Reliably!</h1>
+    <h1>SteamOwnedGames</h1>
     <p>The following is a simple instruction on how to reliably extract the ID of all games that you own on Steam. You can do so manually or automate the process via the console.</p>
 
     <h2>Manual:</h2>
@@ -68,11 +84,19 @@
         <li>Open the console (for Google Chrome on Windows, press <code>Ctrl + Shift + J</code>)</li>
         <li>Copy/paste the following simple script and press Enter:</li>
     </ol>
-    <pre>
-<code>
-JSON.stringify((await (await fetch('https://store.steampowered.com/dynamicstore/userdata')).json()).rgOwnedApps || [])
-</code>
-    </pre>
+    <pre id="codeBlock"><code>JSON.stringify((await (await fetch('https://store.steampowered.com/dynamicstore/userdata')).json()).rgOwnedApps || [])</code></pre>
+    <button onclick="copyToClipboard()">Copy Code</button>
     <p>The list of your app IDs is now printed in the console, and you can copy them.</p>
+
+    <script>
+        function copyToClipboard() {
+            const codeBlock = document.getElementById('codeBlock').innerText;
+            navigator.clipboard.writeText(codeBlock).then(() => {
+                alert('Code copied to clipboard!');
+            }).catch(err => {
+                alert('Failed to copy code: ' + err);
+            });
+        }
+    </script>
 </body>
 </html>

@@ -108,6 +108,7 @@ async function main() {
                     .trim()
                     .replace("Your Price:", "")
                     .replace("€", "")
+                    .replace("$", "")
                     .replace("--", "0")
                     .replace(",", ".")
                     .replace(" ", ""));

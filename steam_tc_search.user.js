@@ -2,10 +2,15 @@
 // @name         steam_tc_search
 // @namespace    Cyb3rGamer
 // @version      0.1
-// @description  A userscript
+// @author       Cyb3r
+// @description  A simple tool to enhance searching for Steam bundles containing TC games
+// @updateURL    http://cyb3rgamer.github.io/steam_tc_search.user.js
+// @downloadURL  http://cyb3rgamer.github.io/steam_tc_search.user.js
 // @match        https://store.steampowered.com/search/?sort_by=Price_ASC&category1=996&category2=29&hidef2p=1
 // @require      https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js
 // @grant        GM_xmlhttpRequest
+// @grant        GM_setValue
+// @grant        GM_getValue
 // @connect      steampowered.com
 // ==/UserScript==
 
@@ -39,7 +44,6 @@ async function get_appids() {
     return json.rgOwnedApps;
 }
 
-
 function wait_max(flagGetter, max) {
     return new Promise((resolve, reject) => {
         let start = Date.now();
@@ -61,8 +65,10 @@ async function main() {
 
     const btn_load   = $("<button>Load</button>");
     const btn_filter = $("<button>Filter</button>");
-
-    $("h2.pageheader").parent().append(btn_load,btn_filter);
+    const btn_noChk  = $("<button>Remove Checked</button>")
+        .on("click", () => {
+            $(".tm-chk:checked").each(function() { $(this).parent().parent().remove(); });
+      });
 
     btn_load.on("click", async function() {
 
@@ -98,12 +104,12 @@ async function main() {
                 return;
             }
 
-            const score    = $(this).find("div.search_reviewscore");
+            const score      = $(this).find("div.search_reviewscore");
             score.empty();
 
-            const price_dom = $(this).find("div.discount_final_price");
+            const price_dom  = $(this).find("div.discount_final_price");
             const price_text = price_dom.text();
-            const price    = parseFloat(
+            const price      = parseFloat(
                     price_text
                     .trim()
                     .replace("Your Price:", "")
@@ -119,8 +125,8 @@ async function main() {
                 return;
             }
 
-            const jsonRaw  = $(this).attr("data-ds-bundle-data");
-            const dsappids = $(this).attr("data-ds-appid");
+            const jsonRaw    = $(this).attr("data-ds-bundle-data");
+            const dsappids   = $(this).attr("data-ds-appid");
             if (!jsonRaw && !dsappids) {
                 $(this).remove();
                 return;
@@ -138,7 +144,7 @@ async function main() {
                 appids = dsappids.split(",");
             }
 
-            const unique_appids = [...new Set(appids)];
+            const unique_appids   = [...new Set(appids)];
             const not_owned_total = unique_appids.filter(appid => !user_appids.includes(appid)).length;
 
             if (isNaN(not_owned_total) || !isFinite(not_owned_total) || not_owned_total <= 0) {
@@ -155,11 +161,47 @@ async function main() {
 
             score.empty();
             score.html(`<div>PP ${price_per.toFixed(2)}</div>`);
-            const bid = $(this).attr("data-ds-bundleid");
-            $("div.col.search_released.responsive_secondrow",$(this)).html(`<a href='https://steamdb.info/bundle/${bid}/'>SteamDB</a>`);
 
+            const second_row = $("div.col.search_released.responsive_secondrow",$(this));
+
+
+            let cid   = '';
+            let ccat  = '';
+            const bid = $(this).attr("data-ds-bundleid");
+            const sid = $(this).attr("data-ds-packageid");
+            if (bid) {
+                cid  = bid;
+                ccat = 'bundle';
+            } else if (sid) {
+                cid  = sid;
+                ccat = 'sub';
+            } else {
+                console.error("No collection id!");
+                return;
+            }
+
+            second_row.html(`<a href='https://steamdb.info/${ccat}/${cid}/'>SteamDB</a>`);
+
+            const checkbox = $(`<input class="tm-chk" type="checkbox" ${GM_getValue(cid, false) ? "checked" : ""}>`);
+            checkbox.on("change", function() {
+                GM_setValue(cid, this.checked);
+                if (this.checked) {
+                    $(this).closest("a.search_result_row").css("background-color", "#d4edda");
+                } else {
+                    $(this).closest("a.search_result_row").css("background-color", "");
+                }
+
+            });
+            const first_div =  $("div.col.search_capsule",$(this));
+            first_div.empty().append(checkbox);
+
+            if (GM_getValue(cid, false)) {
+                $(this).css("background-color", "#d4edda");
+            }
         });
     });
+
+    $("h2.pageheader").parent().append(btn_load,btn_filter,btn_noChk);
 }
 
 main();

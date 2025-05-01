@@ -47,12 +47,11 @@
                     return;
                   }
 
-                const response = await fetch("https://steam-tracker.com/api?action=GetAppList");
-                const data     = await response.json();
-
-                const grouped =
+                const response      = await fetch("https://corsproxy.io/?https://steam-tracker.com/api?action=GetAppList");
+                const data          = await response.json();
+                const grouped       =
                   data.reduce
-                    ( (acc, item) =>
+                    ( ( acc , item ) =>
                       { const key = item.category;
                         if (!acc[key])
                           { acc[key] = []; }
@@ -62,29 +61,19 @@
                     , {}
                     );
 
-                const owned_grouped =
-                  Object.keys(grouped).reduce
-                    ( (acc , key) =>
-                      { acc[key] = grouped[key].filter(item => appids.includes(item.appid.toString())).length;
-                        return acc;
-                      }
-                    , {}
-                    );
-                const resultDiv = $("#result");
-                resultDiv.empty();
-
-                Object.keys(grouped).forEach
-                  ( key =>
+                Object.keys(grouped).reduce
+                  ( ( div , key) =>
                     { const total      = grouped[key].length;
-                      const owned      = owned_grouped[key].length;
+                      const owned      = grouped[key].filter(item => appids.includes(item.appid.toString())).length;
                       const percentage = ((owned / total) * 100).toFixed(2);
-                      resultDiv.append
+                      return div.append
                         ( `<div>
                              <h3>${key}</h3>
                              <p>Owned: ${owned} / ${total} (${percentage}%)</p>
                            </div>`
                         );
                     }
+                  , $("#result").empty()
                   );
 
                 $(this).prop("disabled", false);

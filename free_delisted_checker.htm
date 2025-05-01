@@ -1,28 +1,73 @@
 <html>
 <head>
     <title>Free Delisted Checker</title>
-    <style>
+        <style>
         body {
             font-family: Arial, sans-serif;
             margin: 20px;
+            background-color: #000;
+            color: #ddd;
         }
         h1 {
-            color: #333;
+            color: #ddd;
         }
-        .result {
-            margin-top: 20px;
-            padding: 10px;
-            border: 1px solid #ccc;
-            background-color: #f9f9f9;
+        table {
+            border-collapse: collapse;
+            table-layout: fixed;
+        }
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #444;
+        }
+        td:first-child {
+            width: 20ch;
+        }
+        td:nth-child(2) {
+            width: 5ch;
+        }
+        td:nth-child(3) {
+            width: 10ch;
+        }
+        textarea {
+            background-color: #222;
+            color: #ddd;
+            border: 1px solid #444;
+            padding: 8px;
+        }
+        button {
+            background-color: #444;
+            color: #ddd;
+            border: 1px solid #ddd;
+            padding: 8px 16px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #555;
+        }
+        a {
+          color: #1e90ff;
+          text-decoration: none;
+        }
+        a:hover {
+          text-decoration: underline;
+          color: #00bfff;
         }
     </style>
 </head>
 <body>
     <h1>Free Delisted Checker</h1>
-    <p>Enter your appids:</p>
+    <p>[1] Enter your appids below, one per line (<a href="https://cyb3rgamer.github.io/how_to_get_your_appids.html">how to get them?</a>):</p>
     <textarea id="appids" rows="4" cols="50"></textarea>
-    <button id="checkAppids">Check Appids</button>
-    <div class="result" id="result"></div>
+    <br/>
+    <button id="checkAppids">[2] Check how many delisted games you own</button>
+    <br/>
+    <div id="result"></div>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
@@ -50,7 +95,7 @@
                 const response      = await fetch("https://corsproxy.io/?https://steam-tracker.com/api?action=GetAppList");
                 const data          = await response.json();
                 const grouped       =
-                  data.reduce
+                  data.removed_apps.reduce
                     ( ( acc , item ) =>
                       { const key = item.category;
                         if (!acc[key])
@@ -61,20 +106,19 @@
                     , {}
                     );
 
-                Object.keys(grouped).reduce
-                  ( ( div , key) =>
-                    { const total      = grouped[key].length;
-                      const owned      = grouped[key].filter(item => appids.includes(item.appid.toString())).length;
-                      const percentage = ((owned / total) * 100).toFixed(2);
-                      return div.append
-                        ( `<div>
-                             <h3>${key}</h3>
-                             <p>Owned: ${owned} / ${total} (${percentage}%)</p>
-                           </div>`
-                        );
-                    }
-                  , $("#result").empty()
-                  );
+                  $("#result").empty().append
+                    ( $("<table>").append
+                        ( Object.keys(grouped)
+                          .map
+                            ( key =>
+                              { const total      = grouped[key].length;
+                                const owned      = grouped[key].filter(item => appids.includes(item.appid.toString())).length;
+                                const percentage = ((owned / total) * 100).toFixed(0);
+                                return `<tr><td><h3>${key}</h3></td><td>${percentage}%</td><td>${owned} / ${total}</td></tr>`;
+                              }
+                            )
+                        )
+                    );
 
                 $(this).prop("disabled", false);
                 $(this).text("Check Appids");

@@ -1,71 +1,55 @@
-<html>
-      <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-            background-color: #000;
-            color: #ddd;
-        }
-        h1 {
-            color: #ddd;
-        }
-        table {
-            border-collapse: collapse;
-            table-layout: fixed;
-        }
-        table, th, td {
-            border: 1px solid #ddd;
-        }
-        th, td {
-            padding: 8px;
-            text-align: left;
-        }
-        th {
-            background-color: #444;
-        }
-        td:first-child {
-            width: 20ch;
-        }
-        td:nth-child(2) {
-            width: 5ch;
-        }
-        td:nth-child(3) {
-            width: 10ch;
-        }
-        textarea {
-            background-color: #222;
-            color: #ddd;
-            border: 1px solid #444;
-            padding: 8px;
-        }
-        button {
-            background-color: #444;
-            color: #ddd;
-            border: 1px solid #ddd;
-            padding: 8px 16px;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: #555;
-        }
-        a {
-          color: #1e90ff;
-          text-decoration: none;
-        }
-        a:hover {
-          text-decoration: underline;
-          color: #00bfff;
-        }
-    </style>  
-<div>
-  Check if I own games by their appids <a href='do_i_own.html'>here</a>
-</div>
-  <br/>
-<div>
-  The most reliable way to share the list of games (appids) that you own <a href='how_to_get_your_appids.html'>here</a>       
-</div>
-      <br/>
-<div>
-  You can check delisted/rare games you have in your account <a href='free_delisted_checker.htm'>here</a> 
-</div>  
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cyb3rGamer Tools</title>
+  <link rel="stylesheet" href="shared.css">
+</head>
+
+<body>
+  <div class="container">
+    <header>
+      <h1>Cyb3rGamer Tools</h1>
+      <button id="themeToggle">🌙 Toggle Dark Mode</button>
+    </header>
+
+    <div class="tool-list">
+      <div class="tool-item">
+        <p>Check if I own games by their appids <a href='do_i_own.html'>here</a></p>
+      </div>
+
+      <div class="tool-item">
+        <p>The most reliable way to share the list of games (appids) that you own <a
+            href='how_to_get_your_appids.html'>here</a></p>
+      </div>
+
+      <div class="tool-item">
+        <p>You can check delisted/rare games you have in your account <a href='free_delisted_checker.htm'>here</a></p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const themeToggle = document.getElementById('themeToggle');
+    const html = document.documentElement;
+
+    // Initialize theme
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme) {
+      html.setAttribute('data-theme', savedTheme);
+      themeToggle.textContent = savedTheme === 'dark' ? '☀️ Light Mode' : '🌙 Dark Mode';
+    }
+
+    themeToggle.addEventListener('click', () => {
+      const currentTheme = html.getAttribute('data-theme');
+      const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+      html.setAttribute('data-theme', newTheme);
+      localStorage.setItem('theme', newTheme);
+      themeToggle.textContent = newTheme === 'dark' ? '☀️ Light Mode' : '🌙 Dark Mode';
+    });
+  </script>
+</body>
+
 </html>

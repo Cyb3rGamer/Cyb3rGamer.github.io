@@ -1,103 +1,75 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>How to Get Your App IDs, Reliably!</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-            line-height: 1.6;
-        }
-
-        h1, h2 {
-            color: #333;
-        }
-
-        pre {
-            background-color: #f4f4f4;
-            border: 1px solid #ddd;
-            padding: 10px;
-            overflow-x: auto;
-            display: inline-block;
-            margin-right: 10px;
-        }
-
-        code {
-            font-family: Consolas, 'Courier New', monospace;
-            color: #c7254e;
-            background-color: #f9f2f4;
-            padding: 2px 4px;
-            border-radius: 4px;
-        }
-
-        a {
-            color: #007bff;
-            text-decoration: none;
-        }
-
-        a:hover {
-            text-decoration: underline;
-        }
-
-        ul {
-            padding-left: 20px;
-        }
-
-        li {
-            margin-bottom: 10px;
-        }
-
-        button {
-            padding: 5px 10px;
-            font-size: 14px;
-            cursor: pointer;
-            background-color: #007bff;
-            color: white;
-            border: none;
-            border-radius: 4px;
-        }
-
-        button:hover {
-            background-color: #0056b3;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>How to Get Your App IDs, Reliably!</title>
+  <link rel="stylesheet" href="shared.css">
 </head>
+
 <body>
-    <h1>How to Get Your App IDs, Reliably!</h1>
-    <p>The following is a simple instruction on how to reliably extract the ID of all games that you own on Steam. You can do so manually or automate the process via the console.</p>
+  <div class="container">
+    <header>
+      <h1>How to Get Your App IDs</h1>
+      <button id="themeToggle">🌙 Toggle Dark Mode</button>
+    </header>
+    <p>The following is a simple instruction on how to reliably extract the ID of all games that you own on Steam.
+      You can do so manually or automate the process via the console.</p>
 
     <h2>Manual:</h2>
     <ol>
-        <li>Go to <a href="https://store.steampowered.com/" target="_blank">https://store.steampowered.com/</a></li>
-        <li>Make sure you are logged in</li>
-        <li>Go to <a href="https://store.steampowered.com/dynamicstore/userdata/" target="_blank">https://store.steampowered.com/dynamicstore/userdata/</a></li>
-        <li>The list of your app IDs is under <code>rgOwnedApps</code></li>
+      <li>Go to <a href="https://store.steampowered.com/" target="_blank">https://store.steampowered.com/</a></li>
+      <li>Make sure you are logged in</li>
+      <li>Go to <a href="https://store.steampowered.com/dynamicstore/userdata/"
+          target="_blank">https://store.steampowered.com/dynamicstore/userdata/</a></li>
+      <li>The list of your app IDs is under <code>rgOwnedApps</code></li>
     </ol>
-    <p>There isn't any sensitive information on the page above, so you may share the entire page. Unless, for any reason, you just want to share the list of IDs as mentioned.</p>
+    <p>There isn't any sensitive information on the page above, so you may share the entire page. Unless, for any
+      reason, you just want to share the list of IDs as mentioned.</p>
 
     <h2>Automated:</h2>
     <ol>
-        <li>Go to <a href="https://store.steampowered.com/" target="_blank">https://store.steampowered.com/</a></li>
-        <li>Make sure you are logged in</li>
-        <li>Open the console (for Google Chrome on Windows, press <code>Ctrl + Shift + J</code>)</li>
-        <li>Copy/paste the following simple script and press Enter:</li>
+      <li>Go to <a href="https://store.steampowered.com/" target="_blank">https://store.steampowered.com/</a></li>
+      <li>Make sure you are logged in</li>
+      <li>Open the console (for Google Chrome on Windows, press <code>Ctrl + Shift + J</code>)</li>
+      <li>Copy/paste the following simple script and press Enter:</li>
     </ol>
-    <pre id="codeBlock"><code>console.log(((await (await fetch('https://store.steampowered.com/dynamicstore/userdata')).json()).rgOwnedApps || []).join("\n"));</code></pre>
+    <pre
+      id="codeBlock"><code>console.log(((await (await fetch('https://store.steampowered.com/dynamicstore/userdata')).json()).rgOwnedApps || []).join("\n"));</code></pre>
     <br>
     <button onclick="copyToClipboard()">Copy Code</button>
     <p>The list of your app IDs is now printed in the console, and you can copy them.</p>
+  </div>
 
-    <script>
-        function copyToClipboard() {
-            const codeBlock = document.getElementById('codeBlock').innerText;
-            navigator.clipboard.writeText(codeBlock).then(() => {
-                alert('Code copied to clipboard!');
-            }).catch(err => {
-                alert('Failed to copy code: ' + err);
-            });
-        }
-    </script>
+  <script>
+    const themeToggle = document.getElementById('themeToggle');
+    const html = document.documentElement;
+
+    // Initialize theme
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme) {
+      html.setAttribute('data-theme', savedTheme);
+      themeToggle.textContent = savedTheme === 'dark' ? '☀️ Light Mode' : '🌙 Dark Mode';
+    }
+
+    themeToggle.addEventListener('click', () => {
+      const currentTheme = html.getAttribute('data-theme');
+      const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+      html.setAttribute('data-theme', newTheme);
+      localStorage.setItem('theme', newTheme);
+      themeToggle.textContent = newTheme === 'dark' ? '☀️ Light Mode' : '🌙 Dark Mode';
+    });
+
+    function copyToClipboard() {
+      const codeBlock = document.getElementById('codeBlock').innerText;
+      navigator.clipboard.writeText(codeBlock).then(() => {
+        alert('Code copied to clipboard!');
+      }).catch(err => {
+        alert('Failed to copy code: ' + err);
+      });
+    }
+  </script>
 </body>
+
 </html>

@@ -61,8 +61,10 @@
               return;
             }
 
-            const response = await fetch("https://corsproxy.io/?https://steam-tracker.com/api?action=GetAppList");
-            const data = await response.json();
+            const apiUrl = "https://steam-tracker.com/api?action=GetAppList";
+            const response = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(apiUrl)}`);
+            const wrapper = await response.json();
+            const data = JSON.parse(wrapper.contents);
             const grouped =
               data.removed_apps.reduce
                 ((acc, item) => {

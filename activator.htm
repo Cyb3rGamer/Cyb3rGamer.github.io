@@ -1,0 +1,73 @@
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <title>Steam Key Extractor</title>
+  <link rel="stylesheet" href="shared.css">
+</head>
+
+<body>
+  <div class="container">
+    <header>
+      <h1>Steam Key Extractor</h1>
+      <button id="themeToggle">🌙 Toggle Dark Mode</button>
+    </header>
+
+    <p>Paste your Steam key text below to generate activation links:</p>
+    <textarea id="input" placeholder="e.g. AAAAA-BBBBB-CCCCC"></textarea>
+    <br>
+    <button onclick="extractKeys()">Generate Links</button>
+
+    <h3>Activation Links:</h3>
+    <div id="output"></div>
+  </div>
+
+  <script>
+    const themeToggle = document.getElementById('themeToggle');
+    const html = document.documentElement;
+
+    // Initialize theme
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme) {
+      html.setAttribute('data-theme', savedTheme);
+      themeToggle.textContent = savedTheme === 'dark' ? '☀️ Light Mode' : '🌙 Dark Mode';
+    }
+
+    themeToggle.addEventListener('click', () => {
+      const currentTheme = html.getAttribute('data-theme');
+      const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+      html.setAttribute('data-theme', newTheme);
+      localStorage.setItem('theme', newTheme);
+      themeToggle.textContent = newTheme === 'dark' ? '☀️ Light Mode' : '🌙 Dark Mode';
+    });
+
+    function extractKeys() {
+      const input = document.getElementById('input').value;
+      const outputDiv = document.getElementById('output');
+      outputDiv.innerHTML = '';
+
+      // Regex for Steam keys: 5-5-5 alphanum
+      const keyRegex = /\b[A-Z0-9]{5}-[A-Z0-9]{5}-[A-Z0-9]{5}\b/g;
+      const keys = input.match(keyRegex) || [];
+
+      if (keys.length === 0) {
+        outputDiv.innerHTML = '<p>No keys found.</p>';
+        return;
+      }
+
+      keys.forEach(key => {
+        const a = document.createElement('a');
+        a.href = `https://store.steampowered.com/account/registerkey?key=${key}`;
+        a.textContent = key;
+        a.target = '_blank';
+        a.className = 'result-item not-owned'; // Use not-owned style for a nice green result box
+        a.style.display = 'block';
+        a.style.marginBottom = '8px';
+        outputDiv.appendChild(a);
+      });
+    }
+  </script>
+
+</body>
+
+</html>

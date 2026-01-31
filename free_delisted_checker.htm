@@ -41,35 +41,19 @@
     });
 
     async function fetchWithProxy(apiUrl) {
-      // REPLACE THIS WITH YOUR CLOUDFLARE WORKER URL
-      const WORKER_URL = "YOUR_CLOUDFLARE_WORKER_URL";
+      const WORKER_URL = "https://cors-header-proxy.testerdudeemail.workers.dev/";
+      const proxyUrl = `${WORKER_URL.endsWith('/') ? WORKER_URL : WORKER_URL + '/'}?url=${encodeURIComponent(apiUrl)}`;
 
-      const proxies = [
-        url => WORKER_URL ? `${WORKER_URL.endsWith('/') ? WORKER_URL : WORKER_URL + '/'}?url=${encodeURIComponent(url)}` : null,
-        url => `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}`,
-        url => `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`,
-        url => `https://corsproxy.io/?${encodeURIComponent(url)}`
-      ].filter(p => p !== null);
+      try {
+        const response = await fetch(proxyUrl);
+        if (!response.ok) throw new Error(`Proxy error: ${response.status}`);
 
-      for (const getProxyUrl of proxies) {
-        const proxyUrl = getProxyUrl(apiUrl);
-        if (!proxyUrl || proxyUrl.startsWith("YOUR_CLOUDFLARE")) continue;
-
-        try {
-          const response = await fetch(proxyUrl);
-          if (!response.ok) continue;
-
-          let data = await response.json();
-          // Handle AllOrigins wrapper if necessary
-          if (data.contents) {
-            data = JSON.parse(data.contents);
-          }
-          return data;
-        } catch (e) {
-          console.warn(`Proxy ${proxyUrl} failed, trying next...`, e);
-        }
+        const data = await response.json();
+        return data;
+      } catch (e) {
+        console.error("CORS Proxy failed:", e);
+        throw new Error("The CORS proxy failed to fetch data. Please ensure your Cloudflare Worker is functioning correctly.");
       }
-      throw new Error("All CORS proxies failed. Please ensure your Cloudflare Worker is deployed and its URL is correctly set.");
     }
 
     $("#checkAppids")
